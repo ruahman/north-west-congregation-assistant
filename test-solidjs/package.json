@@ -9,7 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "solid-js": "^1.7.8"
+    "solid-js": "^1.7.8",
+    "test-stencil": "link:test-stencil"
   },
   "devDependencies": {
     "typescript": "^5.0.2",
