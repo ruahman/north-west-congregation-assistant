@@ -1,6 +1,10 @@
 {
   "name": "territory",
   "module": "index.ts",
+  "scripts": {
+    "dev": "cd packages/territory && bun run dev",
+    "dev:components": "cd packages/components && bun run dev"
+  },
   "devDependencies": {
     "bun-types": "latest",
     "eslint": "^8.56.0"
