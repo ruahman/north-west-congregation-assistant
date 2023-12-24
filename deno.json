@@ -1,8 +1,0 @@
-{
-  "tasks": {
-    "build": "deno run -A solution.ts build",
-    "run": "deno run -A solution.ts run",
-    "test": "deno run solution.ts test",
-    "link": "deno run solution.ts test"
-  }
-}
