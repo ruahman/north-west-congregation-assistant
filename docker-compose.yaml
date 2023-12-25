@@ -1,0 +1,32 @@
+version: '3'
+services:
+  bun:
+    container_name: bun
+    image: ${BUN}
+    restart: unless-stopped
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    working_dir: /code
+    command: [ "/bin/sh", "-c", "trap : TERM INT; while :; do echo Ready to code like a rockstar!!!; sleep 2073600; done & wait" ]
+    ports:
+      - 4321:4321
+    volumes:
+      - .:/code
+    depends_on:
+      - couchdb
+    
+  couchdb:
+    container_name: couchdb
+    image: ${COUCHDB}
+    restart: always
+    ports:
+      - 5984:5984
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
+    volumes:
+      - couchdb:/opt/couchdb/data 
+
+volumes:
+  couchdb:
+  

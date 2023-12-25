@@ -3,7 +3,11 @@
   "module": "index.ts",
   "scripts": {
     "dev": "cd packages/territory && bun run dev",
-    "dev:components": "cd packages/components && bun run dev"
+    "dev:components": "cd packages/components && bun run dev",
+    "podman:up": "podman-compose up -d",
+    "podman:down": "podman-compose down",
+    "podman:stop": "podman-compose stop",
+    "podman:shell": "podman-compose exec bun bash"
   },
   "devDependencies": {
     "bun-types": "latest",
