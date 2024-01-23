@@ -1,6 +1,17 @@
 {
   "name": "territory",
   "module": "index.ts",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "bun-types": "latest",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
   "scripts": {
     "dev": "cd packages/territory && bun run dev",
     "dev:components": "cd packages/components && bun run dev",
@@ -8,13 +19,6 @@
     "podman:down": "podman-compose down",
     "podman:stop": "podman-compose stop",
     "podman:shell": "podman-compose exec bun bash"
-  },
-  "devDependencies": {
-    "bun-types": "latest",
-    "eslint": "^8.56.0"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
   },
   "type": "module",
   "workspaces": [
