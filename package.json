@@ -1,6 +1,10 @@
 {
   "name": "territory",
   "module": "index.ts",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+    ],
   "scripts": {
     "dev": "cd packages/territory && bun run dev",
     "dev:components": "cd packages/components && bun run dev",
@@ -19,9 +23,5 @@
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
-  },
-  "type": "module",
-  "workspaces": [
-    "packages/*"
-  ]
+  }
 }
