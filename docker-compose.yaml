@@ -1,32 +1,41 @@
 version: '3'
 services:
+  golang:
+    container_name: golang
+    image: ${GOLANG}
+    restart: unless-stopped
+    stdin_open: true 
+    tty: true       
+    working_dir: /code
+    command: tail -F /dev/null
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/code
+
   bun:
     container_name: bun
     image: ${BUN}
     restart: unless-stopped
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
+    stdin_open: true 
+    tty: true       
     working_dir: /code
-    command: [ "/bin/sh", "-c", "trap : TERM INT; while :; do echo Ready to code like a rockstar!!!; sleep 2073600; done & wait" ]
-    ports:
-      - 4321:4321
+    command: tail -F /dev/null
     volumes:
       - .:/code
-    depends_on:
-      - couchdb
-    
-  couchdb:
-    container_name: couchdb
-    image: ${COUCHDB}
-    restart: always
-    ports:
-      - 5984:5984
+  
+  postgres:
+    container_name: postgres
+    image: ${POSTGRES}
+    restart: unless-stopped
     environment:
-      - COUCHDB_USER=admin
-      - COUCHDB_PASSWORD=password
-    volumes:
-      - couchdb:/opt/couchdb/data 
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - 5432:5432
+    volumes: 
+      - postgres:/var/lib/postgresql/data
 
 volumes:
-  couchdb:
+  postgres:
   
