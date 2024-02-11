@@ -21,7 +21,7 @@ func main() {
 
 	command := os.Args[1]
 	if command == "database" {
-		data.Database(os.Args[2:])
+		data.DatabaseExec(os.Args[2:])
 	} else if command == "server" {
 		service.Server()
 	} else {

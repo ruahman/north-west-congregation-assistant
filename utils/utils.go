@@ -3,9 +3,37 @@ package utils
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 )
+
+func ReadDir(p string) ([]string, error) {
+	// absolutePath := filepath.Join(".")
+	// fmt.Println("Reading directory:", absolutePath)
+
+	d, err := os.Open(p)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	defer d.Close()
+
+	files, err := d.Readdir(0)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	var r []string
+	for _, f := range files {
+		if !f.IsDir() {
+			r = append(r, f.Name())
+		}
+	}
+
+	return r, nil
+}
 
 func ReadFile(p string) (string, error) {
 	content, err := os.ReadFile(p)

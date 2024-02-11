@@ -18,17 +18,15 @@ bun:
 	@echo "Bun Shell"
 	docker compose exec bun bash
 
-.PHONEY: postgres
-postgres:
-ifdef cmd
-ifeq ($(cmd), shell)
-	@echo "Postgres shell"
-	docker compose exec postgres bash
-endif
-else
+.PHONEY: psql
+psql:
 	@echo "Postgres psql"
 	docker compose exec postgres psql -U postgres
-endif
+
+.PHONEY: postgres
+postgres:
+	@echo "Postgres shell"
+	docker compose exec postgres bash
 
 .PHONEY: down
 down:
@@ -44,3 +42,17 @@ stop:
 run:
 	@echo "...Run JW"
 	go run main.go $(cmd)
+
+.TEST: test 
+test:
+	@echo "...Testing"
+	go test -v $(p)
+
+.PHONEY: check
+check:
+	@echo "...Check"
+	go build -o /dev/null .
+
+
+
+
