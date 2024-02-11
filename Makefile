@@ -11,6 +11,7 @@ start:
 .PHONEY: golang
 golang:
 	@echo "Golang Shell"
+	dot_clean .
 	docker compose exec golang bash
 
 .PHONEY: bun

@@ -25,9 +25,9 @@ func Add(n string) {
 
 func Run(db *sql.DB) {
 	fmt.Println("...run migrations")
-	sqlutils.ExecFile(db, "./create-migrations-table_add.sql")
+	sqlutils.ExecFile(db, "./data/migrations/create-migrations-table_add.sql")
 
-	files, err := utils.ReadDir(".")
+	files, err := utils.ReadDir("./data/migrations")
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -43,13 +43,33 @@ func Run(db *sql.DB) {
 	fmt.Println(migrations)
 
 	for _, m := range migrations {
-		sqlutils.ExecFile(db, "./"+m)
+		sqlutils.ExecFile(db, "./data/migrations/"+m)
 	}
 }
 
 func Drop(db *sql.DB) {
 	fmt.Println("...drop migrations")
-	sqlutils.ExecFile(db, "./create-migrations-table_down.sql")
+	// sqlutils.ExecFile(db, "./data/migrations/create-migrations-table_down.sql")
+
+	files, err := utils.ReadDir("./data/migrations")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	var migrations []string
+	for _, f := range files {
+		if matched, _ := regexp.MatchString(`^(\d+)--(.+)_down.sql$`, f); matched == true {
+			migrations = append(migrations, f)
+		}
+	}
+	sort.Strings(migrations)
+	// sort.Reverse(sort.StringSlice(migrations))
+	fmt.Println(migrations)
+
+	// for _, m := range migrations {
+	// 	sqlutils.ExecFile(db, "./data/migrations/"+m)
+	// }
 }
 
 func Up() {
