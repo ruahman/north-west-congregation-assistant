@@ -15,3 +15,23 @@ func TestReadDir(t *testing.T) {
 	}
 	fmt.Println(files)
 }
+
+func TestPrettyPrint(t *testing.T) {
+	type Person struct {
+		Name string
+		Age  int
+	}
+	person := Person{Name: "Alice", Age: 30}
+
+	PrettyPrint(person)
+}
+
+func TestPrettyJSON(t *testing.T) {
+	type Person struct {
+		Name string
+		Age  int
+	}
+	person := Person{Name: "Alice", Age: 30}
+
+	PrettyJSON(person)
+}

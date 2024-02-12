@@ -26,19 +26,14 @@ func DatabaseExec(args []string) {
 					if err != nil {
 						log.Fatal(err)
 					}
-					defer db.Close()
 					migrations.Run(db)
 				} else if args[1] == "drop" {
-					db, err := database.Connect(
+					db := database.Connect(
 						os.Getenv("POSTGRES_USER"),
 						os.Getenv("POSTGRES_PASSWORD"),
 						os.Getenv("POSTGRES_HOST"),
 						os.Getenv("DATABASE"),
 					)
-					if err != nil {
-						log.Fatal(err)
-					}
-					defer db.Close()
 					migrations.Drop(db)
 				} else if args[1] == "add" {
 					migrations.Add(args[2])
@@ -53,41 +48,29 @@ func DatabaseExec(args []string) {
 				fmt.Println("database migration needs more arguments")
 			}
 		} else if args[0] == "create" {
-			db, err := database.Connect(os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_USER"))
-			if err != nil {
-				log.Fatal(err)
-			}
+			db := database.ConnectDB(os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_USER"))
 			defer db.Close()
 			database.CreateDB(db)
 		} else if args[0] == "drop" {
-			db, err := database.Connect(os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_USER"))
-			if err != nil {
-				log.Fatal(err)
-			}
+			db := database.ConnectDB(os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_USER"))
 			defer db.Close()
 			database.DropDB(db)
 		} else if args[0] == "seed" {
 			if args[1] == "run" {
-				db, err := database.Connect(
+				db := database.ConnectDB(
 					os.Getenv("POSTGRES_USER"),
 					os.Getenv("POSTGRES_PASSWORD"),
 					os.Getenv("POSTGRES_HOST"),
 					os.Getenv("DATABASE"),
 				)
-				if err != nil {
-					log.Fatal(err)
-				}
 				seed.Run(db)
 			} else if args[1] == "drop" {
-				db, err := database.Connect(
+				db := database.ConnectDB(
 					os.Getenv("POSTGRES_USER"),
 					os.Getenv("POSTGRES_PASSWORD"),
 					os.Getenv("POSTGRES_HOST"),
 					os.Getenv("DATABASE"),
 				)
-				if err != nil {
-					log.Fatal(err)
-				}
 				seed.Drop(db)
 			}
 		} else {

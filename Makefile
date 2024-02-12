@@ -11,7 +11,6 @@ start:
 .PHONEY: golang
 golang:
 	@echo "Golang Shell"
-	dot_clean .
 	docker compose exec golang bash
 
 .PHONEY: bun
@@ -46,8 +45,13 @@ run:
 
 .TEST: test 
 test:
-	@echo "...Testing"
+ifdef r
+	@echo "...Testing $(p) $(r)"
+	go test -v $(p) -run $(r)
+else
+	@echo "...Testing $(p)"
 	go test -v $(p)
+endif
 
 .PHONEY: check
 check:

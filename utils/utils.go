@@ -2,11 +2,21 @@ package utils
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 )
+
+func PrettyPrint(x interface{}) {
+	fmt.Printf("%+v\n", x)
+}
+
+func PrettyJSON(x interface{}) {
+	prettyJSON, _ := json.MarshalIndent(x, "", "  ")
+	fmt.Println(string(prettyJSON))
+}
 
 func ReadDir(p string) ([]string, error) {
 	// absolutePath := filepath.Join(".")
