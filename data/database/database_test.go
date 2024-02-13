@@ -78,25 +78,21 @@ func TestCreateDB(t *testing.T) {
 	if err != nil {
 		t.Error("Query failed")
 	}
-
 	defer rows.Close()
-	var datnames []string
-	for rows.Next() {
+
+	databases, err := Map[string](rows, func(rows *sql.Rows) (string, error) {
 		var datname string
 		if err := rows.Scan(&datname); err != nil {
-			t.Error("Scan failed")
+			return "", err
 		}
-		fmt.Println(datname)
-		datnames = append(datnames, datname)
+		return datname, nil
+	})
+	if err != nil {
+		t.Error("Map failed")
 	}
-	if err := rows.Err(); err != nil {
-		t.Error("Rows error")
-	}
+	fmt.Println("databases", databases)
 
-	fmt.Println(datnames)
-	fmt.Println(len(datnames))
-
-	if len(datnames) != 4 {
+	if len(databases) != 4 {
 		t.Error("Database not created")
 	}
 }
