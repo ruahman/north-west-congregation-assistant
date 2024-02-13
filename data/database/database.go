@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"jw/data/sqlutils"
+	"jw/utils"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -51,8 +51,8 @@ func Connect(u string, p string, h string, d string) (*sql.DB, error) {
  * Create the database
  * @param db *sql.DB - database connection
  */
-func CreateDB(db *sql.DB) {
-	sqlutils.ExecFile(db, DATABASE_PATH+"/create-database_up.sql")
+func CreateDB(db *sql.DB, database string) {
+	_, _ = Exec(db, "CREATE DATABASE "+database)
 }
 
 /***
@@ -60,5 +60,56 @@ func CreateDB(db *sql.DB) {
  * @param db *sql.DB - database connection
  */
 func DropDB(db *sql.DB) {
-	sqlutils.ExecFile(db, DATABASE_PATH+"/create-database_down.sql")
+	_, _ = ExecFile(db, DATABASE_PATH+"/database_down.sql")
+}
+
+/***
+ * Execute a sql Query
+ * @param db *sql.DB - database connection
+ * @param q string - sql Query
+ * @param params ...interface{} - Query parameters
+ * @return sql.Result - result of the sql execution
+ * @return error - error if any
+ */
+func Exec(db *sql.DB, q string, params ...interface{}) (sql.Result, error) {
+	res, err := db.Exec(q, params...)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return res, nil
+}
+
+/***
+ * Execute a sql file
+ * @param db *sql.DB - database connection
+ * @param p string - path to the sql file
+ * @return sql.Result - result of the sql execution
+ * @return error - error if any
+ */
+func ExecFile(db *sql.DB, p string) (sql.Result, error) {
+	sql, err := utils.ReadFile(p)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	res, err := db.Exec(sql)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func Query(db *sql.DB, q string, params ...interface{}) (*sql.Rows, error) {
+	rows, err := db.Query(q, params...)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return rows, nil
 }

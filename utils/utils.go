@@ -55,14 +55,14 @@ func ReadFile(p string) (string, error) {
 	return r, nil
 }
 
-func LoadEnv() error {
-	fmt.Println("--- Loading .env file ---")
-	f, err := os.Open(".env")
-	defer f.Close()
+func LoadEnv(p string) error {
+	fmt.Println("--- Loading dotenv file ---")
+	f, err := os.Open(p)
 	if err != nil {
-		fmt.Println("No .env file found")
+		fmt.Println("No dotenv file found")
 		return err
 	}
+	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
 	n := 1
