@@ -86,3 +86,12 @@ func LoadEnv(p string) error {
 
 	return nil
 }
+
+func Search[T comparable](a []T, x T) int {
+	for i, n := range a {
+		if x == n {
+			return i
+		}
+	}
+	return -1
+}

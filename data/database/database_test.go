@@ -3,16 +3,18 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"jw/data/models"
 	"jw/utils"
 	"log"
 	"testing"
 )
 
 const (
-	USERNAME = "postgres"
-	PASSWORD = "password"
-	HOST     = "postgres"
-	DATABASE = "postgres"
+	USERNAME  = "postgres"
+	PASSWORD  = "password"
+	HOST      = "postgres"
+	DATABASE  = "postgres"
+	NOT_FOUND = -1
 )
 
 func setup(optional ...string) (*sql.DB, func(db *sql.DB)) {
@@ -65,6 +67,27 @@ func TestExecFile(t *testing.T) {
 	utils.PrettyJSON(res)
 }
 
+func getDatabases(db *sql.DB) ([]string, error) {
+	rows, err := Query(db, "SELECT datname FROM pg_database")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	databases, err := models.Map[string](rows, func(rows *sql.Rows) (string, error) {
+		var datname string
+		if err := rows.Scan(&datname); err != nil {
+			return "", err
+		}
+		return datname, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return databases, nil
+}
+
 func TestCreateDB(t *testing.T) {
 	db, teardown := setup("postgres")
 	defer teardown(db)
@@ -74,25 +97,58 @@ func TestCreateDB(t *testing.T) {
 		_, _ = Exec(db, "DROP DATABASE test")
 	})()
 
-	rows, err := Query(db, "SELECT datname FROM pg_database")
+	databases, err := getDatabases(db)
 	if err != nil {
-		t.Error("Query failed")
+		t.Error("getDatabases failed")
 	}
-	defer rows.Close()
 
-	databases, err := Map[string](rows, func(rows *sql.Rows) (string, error) {
-		var datname string
-		if err := rows.Scan(&datname); err != nil {
-			return "", err
-		}
-		return datname, nil
-	})
-	if err != nil {
-		t.Error("Map failed")
+	fmt.Println("databases", databases)
+
+	if len(databases) != 4 {
+		t.Error("Database test was not created")
 	}
+
+	if x := utils.Search(databases, "test"); x == NOT_FOUND {
+		t.Error("Database test was not created")
+	}
+
+	fmt.Println("Database test was created")
+}
+
+func TestDropDB(t *testing.T) {
+	db, teardown := setup("postgres")
+	defer teardown(db)
+
+	CreateDB(db, "test")
+
+	databases, err := getDatabases(db)
+	if err != nil {
+		t.Error("getDatabases failed")
+	}
+
 	fmt.Println("databases", databases)
 
 	if len(databases) != 4 {
 		t.Error("Database not created")
 	}
+
+	if x := utils.Search(databases, "test"); x == NOT_FOUND {
+		t.Error("Database test was not created")
+	}
+
+	DropDB(db, "test")
+
+	databases, err = getDatabases(db)
+	if err != nil {
+		t.Error("getDatabases failed")
+	}
+
+	if len(databases) != 3 {
+		t.Error("Database not created")
+	}
+
+	if x := utils.Search(databases, "test"); x != NOT_FOUND {
+		t.Error("Database was not deleted")
+	}
+	println("test db was deleted")
 }
