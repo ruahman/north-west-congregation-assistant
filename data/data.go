@@ -58,7 +58,7 @@ func DatabaseExec(args []string) {
 				log.Fatal(err)
 			}
 			defer db.Close()
-			database.CreateDB(db)
+			database.CreateDB(db, os.Getenv("DATABASE"))
 		} else if args[0] == "drop" {
 			db, err := database.Connect(os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_HOST"), os.Getenv("POSTGRES_USER"))
 			if err != nil {

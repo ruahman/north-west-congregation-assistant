@@ -67,6 +67,34 @@ func TestExecFile(t *testing.T) {
 	utils.PrettyJSON(res)
 }
 
+func TestQuery(t *testing.T) {
+	db, teardown := setup("postgres")
+	defer teardown(db)
+
+	rows, err := Query(db, "SELECT datname FROM pg_database")
+	if err != nil {
+		t.Error("Query failed")
+	}
+	defer rows.Close()
+
+	rowCount := 0
+	for rows.Next() {
+		rowCount++
+		var datname string
+		err := rows.Scan(&datname)
+		if err != nil {
+			t.Error("Scan failed")
+		}
+		fmt.Println("datname", datname)
+	}
+	if rowCount == 0 {
+		t.Error("Query failed")
+	}
+
+	fmt.Println("Query result")
+	fmt.Println("rowCount", rowCount)
+}
+
 func getDatabases(db *sql.DB) ([]string, error) {
 	rows, err := Query(db, "SELECT datname FROM pg_database")
 	if err != nil {

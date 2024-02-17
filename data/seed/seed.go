@@ -2,13 +2,13 @@ package seed
 
 import (
 	"database/sql"
-	"jw/data/sqlutils"
+	"jw/data/database"
 )
 
 func Run(db *sql.DB) {
-	sqlutils.ExecFile(db, "./seed-table_create.sql")
+	_, _ = database.ExecFile(db, "./seed-table_create.sql")
 }
 
 func Drop(db *sql.DB) {
-	sqlutils.ExecFile(db, "./seed-table_drop.sql")
+	_, _ = database.ExecFile(db, "./seed-table_drop.sql")
 }

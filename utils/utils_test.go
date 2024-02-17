@@ -35,3 +35,29 @@ func TestPrettyJSON(t *testing.T) {
 
 	PrettyJSON(person)
 }
+
+func TestCheckAddDeleteFile(t *testing.T) {
+	if CheckFile("./this-file-do-not-exist.txt") {
+		t.Error("File does exist")
+	}
+	if !CheckFile("./utils_test.go") {
+		t.Error("File does not exist")
+	}
+	if !CheckFilePattern("utils_test") {
+		t.Error("File does not exist")
+	}
+	err := AddFile("./now-this-file-do-not-exist.txt")
+	if err != nil {
+		t.Error("AddFile failed")
+	}
+	if !CheckFile("./now-this-file-do-not-exist.txt") {
+		t.Error("File does not exist")
+	}
+	err = DeleteFile("./now-this-file-do-not-exist.txt")
+	if err != nil {
+		t.Error("DeleteFile failed")
+	}
+	if CheckFile("./now-this-file-do-not-exist.txt") {
+		t.Error("File does exist")
+	}
+}

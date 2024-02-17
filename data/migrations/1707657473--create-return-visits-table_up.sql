@@ -1,4 +1,0 @@
-CREATE TABLE IF NOT EXISTS return_visits (
-  id SERIAL PRIMARY KEY, 
-  name VARCHAR(255) NOT NULL 
-)

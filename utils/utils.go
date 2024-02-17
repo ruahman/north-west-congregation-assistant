@@ -55,6 +55,41 @@ func ReadFile(p string) (string, error) {
 	return r, nil
 }
 
+func AddFile(p string) error {
+	f, err := os.Create(p)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	return nil
+}
+
+func CheckFile(p string) bool {
+	_, err := os.Stat(p)
+	return !os.IsNotExist(err)
+}
+
+func CheckFilePattern(p string) bool {
+	files, err := ReadDir(".")
+	if err != nil {
+		return false
+	}
+	for _, f := range files {
+		if strings.Contains(f, p) {
+			return true
+		}
+	}
+	return false
+}
+
+func DeleteFile(p string) error {
+	err := os.Remove(p)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func LoadEnv(p string) error {
 	fmt.Println("--- Loading dotenv file ---")
 	f, err := os.Open(p)

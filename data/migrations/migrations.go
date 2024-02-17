@@ -3,7 +3,7 @@ package migrations
 import (
 	"database/sql"
 	"fmt"
-	"jw/data/sqlutils"
+	"jw/data/database"
 	"jw/utils"
 	"log"
 	"os"
@@ -12,20 +12,32 @@ import (
 	"time"
 )
 
-func Add(n string) {
+func Add(n string) (string, string) {
 	timeStamp := time.Now().Unix()
 
 	u := fmt.Sprintf("%d--%s_up.sql", timeStamp, n)
 	d := fmt.Sprintf("%d--%s_down.sql", timeStamp, n)
 
 	fmt.Println("...Creating migration files", u, d)
-	os.Create("./" + u)
-	os.Create("./" + d)
+	_, err := os.Create("./" + u)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = os.Create("./" + d)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return u, d
 }
 
 func Run(db *sql.DB) {
 	fmt.Println("...run migrations")
-	sqlutils.ExecFile(db, "./data/migrations/create-migrations-table_add.sql")
+	_, err := database.ExecFile(db, "./data/migrations/create-migrations-table_add.sql")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	files, err := utils.ReadDir("./data/migrations")
 	if err != nil {
@@ -42,9 +54,9 @@ func Run(db *sql.DB) {
 	sort.Strings(migrations)
 	fmt.Println(migrations)
 
-	for _, m := range migrations {
-		sqlutils.ExecFile(db, "./data/migrations/"+m)
-	}
+	// for _, m := range migrations {
+	// 	// sqlutils.ExecFile(db, "./data/migrations/"+m)
+	// }
 }
 
 func Drop(db *sql.DB) {

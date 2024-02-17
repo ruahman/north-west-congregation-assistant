@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	err := utils.LoadEnv()
+	err := utils.LoadEnv(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 		return
