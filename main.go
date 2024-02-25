@@ -1,13 +1,13 @@
 package main
 
 import (
+	"data"
 	"fmt"
-	"jw/data"
-	"jw/service"
-	"jw/utils"
 	"log"
 	"os"
+	"service"
 	"strings"
+	"utils"
 )
 
 func main() {

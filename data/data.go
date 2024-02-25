@@ -1,10 +1,10 @@
 package data
 
 import (
+	"data/database"
+	"data/migrations"
+	"data/seed"
 	"fmt"
-	"jw/data/database"
-	"jw/data/migrations"
-	"jw/data/seed"
 	"log"
 	"os"
 	"strings"

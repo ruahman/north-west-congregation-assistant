@@ -1,12 +1,12 @@
 package database
 
 import (
+	"data/models"
 	"database/sql"
 	"fmt"
-	"jw/data/models"
-	"jw/utils"
 	"log"
 	"testing"
+	"utils"
 )
 
 const (
@@ -38,6 +38,10 @@ func setup(optional ...string) (*sql.DB, func(db *sql.DB)) {
 	return db, func(db *sql.DB) {
 		db.Close()
 	}
+}
+
+func TestHello(t *testing.T) {
+	fmt.Println("Hello, world!")
 }
 
 func Teardown(db *sql.DB) {

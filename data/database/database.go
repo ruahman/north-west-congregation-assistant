@@ -3,8 +3,8 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"jw/utils"
 	"log"
+	"utils"
 
 	_ "github.com/lib/pq"
 )
