@@ -1,4 +1,4 @@
-package logic
+package framework
 
 import (
 	"net/http"

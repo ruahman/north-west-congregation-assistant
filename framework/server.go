@@ -1,6 +1,7 @@
-package logic
+package framework
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -10,7 +11,8 @@ func Server() {
 
 	Routes(mux)
 
-	err := http.ListenAndServe("localhost:8090", mux)
+	fmt.Println("Server running on port 8080")
+	err := http.ListenAndServe("localhost:8080", mux)
 	if err != nil {
 		log.Fatal(err)
 	}

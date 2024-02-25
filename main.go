@@ -1,11 +1,10 @@
 package main
 
 import (
-	"data"
 	"fmt"
+	app "framework"
 	"log"
 	"os"
-	"service"
 	"strings"
 	"utils"
 )
@@ -21,9 +20,9 @@ func main() {
 
 	command := os.Args[1]
 	if command == "database" {
-		data.DatabaseExec(os.Args[2:])
+		// data.DatabaseExec(os.Args[2:])
 	} else if command == "server" {
-		service.Server()
+		app.Server()
 	} else {
 		fmt.Println("command not found")
 	}
