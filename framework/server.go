@@ -4,15 +4,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 func Server() {
 	mux := http.NewServeMux()
 
 	Routes(mux)
-
-	fmt.Println("Server running on port 8080")
-	err := http.ListenAndServe("localhost:8080", mux)
+	port := os.Getenv("PORT")
+	fmt.Println("Server running on port", port)
+	err := http.ListenAndServe("localhost:"+port, mux)
 	if err != nil {
 		log.Fatal(err)
 	}

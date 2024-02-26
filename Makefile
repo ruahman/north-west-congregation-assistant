@@ -58,6 +58,9 @@ check:
 	@echo "...Check"
 	go build -o /dev/null .
 
-
+.PHONEY: clean
+clean:
+	@echo "...Clean"
+	go clean 
 
 
