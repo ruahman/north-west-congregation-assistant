@@ -1,18 +1,5 @@
 version: '3'
 services:
-  golang:
-    container_name: golang
-    image: ${GOLANG}
-    restart: unless-stopped
-    stdin_open: true 
-    tty: true       
-    working_dir: /code
-    command: tail -F /dev/null
-    ports:
-      - 8080:8080
-    volumes:
-      - .:/code
-
   bun:
     container_name: bun
     image: ${BUN}
@@ -21,6 +8,8 @@ services:
     tty: true       
     working_dir: /code
     command: tail -F /dev/null
+    ports:
+      - ${PORT}:${PORT}
     volumes:
       - .:/code
   
@@ -37,6 +26,16 @@ services:
       - postgres:/var/lib/postgresql/data
       - .:/code
 
+  redis:
+    container_name: redis
+    image: ${REDIS}
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+
 volumes:
   postgres:
+  redis:
   
