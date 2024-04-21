@@ -6,6 +6,7 @@
     "module": "ESNext",
     "moduleDetection": "force",
     "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
     "allowJs": true,
 
     // Bundler mode
@@ -22,6 +23,7 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
+    "noPropertyAccessFromIndexSignature": false,
+    
   }
 }
