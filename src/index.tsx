@@ -6,7 +6,7 @@ const app = new Hono();
 
 app.use(logger());
 
-app.use('/', logger(), serveStatic({ root: './public/index.html' }));
+app.use('/*', serveStatic({ root: './public/' }));
 
 // app.get('/', c => {
 //   return c.text('Hello Hono, dev!');
