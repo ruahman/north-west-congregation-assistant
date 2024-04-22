@@ -1,10 +1,16 @@
 import { Hono } from 'hono';
+import { serveStatic } from 'hono/bun';
+import { logger } from 'hono/logger';
 
 const app = new Hono();
 
-app.get('/', c => {
-  return c.text('Hello Hono!!!!');
-});
+app.use(logger());
+
+app.use('/', logger(), serveStatic({ root: './public/index.html' }));
+
+// app.get('/', c => {
+//   return c.text('Hello Hono, dev!');
+// });
 
 // return json
 app.get('/api/hello', c => {
@@ -42,9 +48,11 @@ app.get('/page', c => {
 });
 
 // return raw response
-app.get('/', c => {
-  return new Response('Good morning!');
-});
+// app.get('/', c => {
+//   return new Response('Good morning!');
+// });
+
+console.log('process.env.PORT: ', process.env.PORT);
 
 export default {
   port: process.env.PORT,
