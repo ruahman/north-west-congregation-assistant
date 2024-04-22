@@ -6,11 +6,11 @@ const app = new Hono();
 
 app.use(logger());
 
-app.use('/*', serveStatic({ root: './public/' }));
+app.use('/public/*', serveStatic({ root: './' }));
 
-// app.get('/', c => {
-//   return c.text('Hello Hono, dev!');
-// });
+app.get('/', c => {
+  return c.text('Hello Hono, dev!');
+});
 
 // return json
 app.get('/api/hello', c => {
@@ -52,9 +52,4 @@ app.get('/page', c => {
 //   return new Response('Good morning!');
 // });
 
-console.log('process.env.PORT: ', process.env.PORT);
-
-export default {
-  port: process.env.PORT,
-  fetch: app.fetch,
-};
+export { app };
