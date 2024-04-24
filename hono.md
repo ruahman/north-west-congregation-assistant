@@ -590,6 +590,262 @@ app.get('/cookie', (c) => {
 })
 ```
 
+# JSX 
+
+you can write html using JSX
+
+```javascript
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx"
+  }
+}
+```
+
+```javascript
+import type { FC } from 'hono/jsx'
+
+const app = new Hono()
+
+const Layout: FC = (props) => {
+  return (
+    <html>
+      <body>{props.children}</body>
+    </html>
+  )
+}
+
+const Top: FC<{ messages: string[] }> = (props: { messages: string[] }) => {
+  return (
+    <Layout>
+      <h1>Hello Hono!</h1>
+      <ul>
+        {props.messages.map((message) => {
+          return <li>{message}!!</li>
+        })}
+      </ul>
+    </Layout>
+  )
+}
+
+app.get('/', (c) => {
+  const messages = ['Good Morning', 'Good Evening', 'Good Night']
+  return c.html(<Top messages={messages} />)
+})
+
+export default app
+```
+
+# context
+
+by using *useContext*, you can share data globally to any component 
+
+```javascript
+import type { FC } from 'hono/jsx'
+import { createContext, useContext } from 'hono/jsx'
+
+const themes = {
+  light: {
+    color: '#000000',
+    background: '#eeeeee',
+  },
+  dark: {
+    color: '#ffffff',
+    background: '#222222',
+  },
+}
+
+const ThemeContext = createContext(themes.light)
+
+const Button: FC = () => {
+  const theme = useContext(ThemeContext)
+  return <button style={theme}>Push!</button>
+}
+
+const Toolbar: FC = () => {
+  return (
+    <div>
+      <Button />
+    </div>
+  )
+}
+
+// ...
+
+app.get('/', (c) => {
+  return c.html(
+    <div>
+      <ThemeContext.Provider value={themes.dark}>
+        <Toolbar />
+      </ThemeContext.Provider>
+    </div>
+  )
+})
+```
+
+```javascript
+import { Hono } from 'hono'
+import { html } from 'hono/html'
+
+const app = new Hono()
+
+interface SiteData {
+  title: string
+  children?: any
+}
+
+const Layout = (props: SiteData) => html`<!DOCTYPE html>
+  <html>
+    <head>
+      <title>${props.title}</title>
+    </head>
+    <body>
+      ${props.children}
+    </body>
+  </html>`
+
+const Content = (props: { siteData: SiteData; name: string }) => (
+  <Layout {...props.siteData}>
+    <h1>Hello {props.name}</h1>
+  </Layout>
+)
+
+app.get('/:name', (c) => {
+  const { name } = c.req.param()
+  const props = {
+    name: name,
+    siteData: {
+      title: 'JSX with html sample',
+    },
+  }
+  return c.html(<Content {...props} />)
+})
+
+export default app
+```
+
+
+# jsx-dom 
+
+```javascript
+import { useState } from 'hono/jsx'
+import { render } from 'hono/jsx/dom'
+
+function Counter() {
+  const [count, setCount] = useState(0)
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <html>
+      <body>
+        <Counter />
+      </body>
+    </html>
+  )
+}
+
+const root = document.getElementById('root')
+render(<App />, root)
+```
+
+
+# testing 
+
+```javascript
+app.get('/posts', (c) => {
+  return c.text('Many posts')
+})
+
+app.post('/posts', (c) => {
+  return c.json(
+    {
+      message: 'Created',
+    },
+    201,
+    {
+      'X-Custom': 'Thank you',
+    }
+  )
+})
+```
+
+test get request 
+
+```javascript
+describe('Example', () => {
+  test('GET /posts', async () => {
+    const res = await app.request('/posts')
+    expect(res.status).toBe(200)
+    expect(await res.text()).toBe('Many posts')
+  })
+})
+```
+
+test post request 
+
+```javascript
+test('POST /posts', async () => {
+  const res = await app.request('/posts', {
+    method: 'POST',
+  })
+  expect(res.status).toBe(201)
+  expect(res.headers.get('X-Custom')).toBe('Thank you')
+  expect(await res.json()).toEqual({
+    message: 'Created',
+  })
+})
+```
+
+you can also just make a request object 
+
+```javascript
+test('POST /posts', async () => {
+  const req = new Request('http://localhost/posts', {
+    method: 'POST',
+  })
+  const res = await app.request(req)
+  expect(res.status).toBe(201)
+  expect(res.headers.get('X-Custom')).toBe('Thank you')
+  expect(await res.json()).toEqual({
+    message: 'Created',
+  })
+})
+```
+
+## Env 
+
+you can set environment variables for testing 
+
+```javascript
+const MOCK_ENV = {
+  API_HOST: 'example.com',
+  DB: { prepare: () => { /* mocked D1 */ } },
+}
+
+test('GET /posts', async () => {
+  const res = await app.request('/posts', {}, MOCK_ENV)
+})
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
