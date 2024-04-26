@@ -836,7 +836,269 @@ test('GET /posts', async () => {
 ```
 
 
+# validation 
 
+validate incomming values 
+
+```javascript
+import { validator } from 'hono/validator'
+
+// validate form
+app.post(
+  '/posts',
+  validator('form', (value, c) => {
+    // get body data
+    const body = value['body']
+    // check if body is string
+    if (!body || typeof body !== 'string') {
+      // if not return error
+      return c.text('Invalid!', 400)
+    }
+
+    // return validated data
+    return {
+      body: body,
+    }
+  }),
+  (c) => {
+  // get validated data
+  const { body } = c.req.valid('form')
+  // ... do something
+  return c.json(
+    {
+      message: 'Created!',
+    },
+    201
+  )
+})
+```
+
+you can specify multiple validators
+
+```javascript
+app.post(
+  '/posts/:id',
+  validator('param', ...),
+  validator('query', ...),
+  validator('json', ...),
+  (c) => {
+    //... 
+  }
+```
+
+## with zod 
+
+you can use zod for validation 
+
+```javascript
+import { z } from 'zod'
+
+const schema = z.object({
+  body: z.string(),
+})
+
+const route = app.post(
+  '/posts',
+  validator('form', (value, c) => {
+    const parsed = schema.safeParse(value)
+    if (!parsed.success) {
+      return c.text('Invalid!', 401)
+    }
+    return parsed.data
+  }),
+  (c) => {
+    const { body } = c.req.valid('form')
+    // ... do something
+    return c.json(
+      {
+        message: 'Created!',
+      },
+      201
+    )
+  }
+)
+```
+
+
+
+# zod middle ware 
+
+```javascript
+import { zValidator } from '@hono/zod-validator'
+
+const route = app.post(
+  '/posts',
+  zValidator(
+    'form',
+    z.object({
+      body: z.string(),
+    })
+  ),
+  (c) => {
+    // ...
+  }
+)
+```
+
+
+# RPC 
+
+you can share API specification between client and server 
+
+server
+
+```javascript
+const route = app.post(
+  '/posts',
+  zValidator(
+    'form',
+    z.object({
+      title: z.string(),
+      body: z.string(),
+    })
+  ),
+  (c) => {
+    // ...
+    return c.json(
+      {
+        ok: true,
+        message: 'Created!',
+      },
+      201
+    )
+  }
+)
+
+export type AppType = typeof route 
+```
+
+client 
+
+```javascript
+import { AppType } from '.'
+import { hc } from 'hono/client'
+
+const client = hc<AppType>('http://localhost:8787/')
+
+const res = await client.posts.$post({
+  form: {
+    title: 'Hello',
+    body: 'Hono is a cool project',
+  },
+})
+
+if (res.ok) {
+  const data = await res.json()
+  console.log(data.message)
+}
+
+```
+
+# best practices 
+
+## build larger applications 
+
+```javascript
+// authors.ts
+import { Hono } from 'hono'
+
+const app = new Hono()
+
+app.get('/', (c) => c.json('list authors'))
+app.post('/', (c) => c.json('create an author', 201))
+app.get('/:id', (c) => c.json(`get ${c.req.param('id')}`))
+
+export default app
+```
+
+```javascript 
+// books.ts
+import { Hono } from 'hono'
+
+const app = new Hono()
+
+app.get('/', (c) => c.json('list books'))
+app.post('/', (c) => c.json('create a book', 201))
+app.get('/:id', (c) => c.json(`get ${c.req.param('id')}`))
+
+export default app
+```
+
+```javascript
+// index.ts
+import { Hono } from 'hono'
+import authors from './authors'
+import books from './books'
+
+const app = new Hono()
+
+app.route('/authors', authors)
+app.route('/books', books)
+
+export default app
+```
+
+
+# examples 
+
+web api 
+
+
+# JWT 
+
+for sign, verify and decode JWT 
+
+## sign 
+
+generate a JWT by encoding a payload. 
+
+```javascript
+import { sign } from 'hono/jwt'
+
+const payload = {
+  sub: 'user123',
+  role: 'admin',
+  exp: Math.floor(Date.now() / 1000) + 60 * 5, // Token expires in 5 minutes
+}
+const secret = 'mySecretKey'
+const token = await sign(payload, secret)
+```
+
+# verify 
+
+check if token is valid 
+
+```javascript
+import { verify } from 'hono/jwt'
+
+const tokenToVerify = 'token'
+const secretKey = 'mySecretKey'
+
+const decodedPayload = await verify(tokenToVerify, secretKey)
+console.log(decodedPayload)
+```
+
+
+
+## decode 
+
+decode token without verifying 
+
+
+```javascript
+import { decode } from 'hono/jwt'
+
+// Decode the JWT token
+const tokenToDecode =
+  'eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAidXNlcjEyMyIsICJyb2xlIjogImFkbWluIn0.JxUwx6Ua1B0D1B0FtCrj72ok5cm1Pkmr_hL82sd7ELA'
+
+const { header, payload } = decode(tokenToDecode)
+
+console.log('Decoded Header:', header)
+console.log('Decoded Payload:', payload)
+```
+
+# middleware 
 
 
 
