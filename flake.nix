@@ -1,4 +1,3 @@
-
 {
   description = "Bun dev environment";
 
@@ -17,12 +16,17 @@
       {
         devShells.default = with pkgs; mkShell {
           buildInputs = [
+            couchdb3
+            nginx
+            redis
             bun
           ];
-          
-
-          # Use zsh so it works with my neovim shell prompt
+         
           shellHook = ''
+            ### couchdb
+            export ERL_FLAGS="-couch_ini $PWD/.couchdb/config/local.ini"
+
+            ### zsh
             export SHELL=$(which zsh)
             exec $SHELL
           '';
