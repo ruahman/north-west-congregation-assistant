@@ -29,15 +29,19 @@
             ### locale 
             export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
 
+            ### postgresql 
+
             ### couchdb
             export ERL_FLAGS="-couch_ini $PWD/.couchdb/config/local.ini"
 
             ### redis 
             sudo sysctl -w vm.overcommit_memory=1
 
+            ### nginx
+
             ### zsh
-            export SHELL=$(which zsh)
-            exec $SHELL
+            # export SHELL=$(which zsh)
+            # exec $SHELL
           '';
         };
       }

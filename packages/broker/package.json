@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "broker",
   "module": "index.ts",
   "type": "module",
   "devDependencies": {
