@@ -16,15 +16,24 @@
       {
         devShells.default = with pkgs; mkShell {
           buildInputs = [
+            glibcLocales
+            postgresql
             couchdb3
-            nginx
             redis
+            nginx
             bun
           ];
+
          
           shellHook = ''
+            ### locale 
+            export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
+
             ### couchdb
             export ERL_FLAGS="-couch_ini $PWD/.couchdb/config/local.ini"
+
+            ### redis 
+            sudo sysctl -w vm.overcommit_memory=1
 
             ### zsh
             export SHELL=$(which zsh)
