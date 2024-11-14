@@ -12,7 +12,25 @@
         pkgs = import nixpkgs {
           inherit system;
         };
-        postgresDir = toString ./.;
+
+        COUCHDB_DIR = "$PWD/.couchdb";
+        local_ini = ''
+        [couchdb]
+        database_dir = $PWD/.couchdb/data
+
+        [admins]
+        admin = ruahman
+
+        [httpd]
+        bind_address = 127.0.0.1
+        '';
+
+        REDIS_DIR = "$PWD/.redis";
+        redis_conf = ''
+        dir $PWD/.redis 
+
+        dbfilename dump.rdb
+        '';
       in
       {
         devShells.default = with pkgs; mkShell {
@@ -36,9 +54,23 @@
             export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
 
             ### couchdb
+            mkdir -p ${COUCHDB_DIR}/data
+            mkdir -p ${COUCHDB_DIR}/config
+
+            if [ ! -f "${COUCHDB_DIR}/config/local.ini" ]; then
+              echo "${local_ini}" > "${COUCHDB_DIR}/config/local.ini"
+            fi
+
             export ERL_FLAGS="-couch_ini $PWD/.couchdb/config/local.ini"
 
             ### redis 
+            mkdir -p ${REDIS_DIR}/data
+            mkdir -p ${REDIS_DIR}/config
+            if [ ! -f "${REDIS_DIR}/config/redis.conf" ]; then
+              echo "${redis_conf}" > "${REDIS_DIR}/config/redis.conf" 
+            fi
+            
+
             # set overcommit_memory
             if [[ $(sysctl -n vm.overcommit_memory) -eq 0 ]]; then
               sudo sysctl -w vm.overcommit_memory=1
