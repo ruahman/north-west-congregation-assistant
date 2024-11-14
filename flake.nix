@@ -58,19 +58,20 @@
             export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
 
             ### couchdb
-            mkdir -p ${COUCHDB_DIR}/data
-            mkdir -p ${COUCHDB_DIR}/config
+            export COUCHDBDIR=${COUCHDB_DIR}
+            mkdir -p \$COUCHDBDIR/data
+            mkdir -p \$COUCHDBDIR/config
 
-            if [ ! -f "${COUCHDB_DIR}/config/local.ini" ]; then
-              echo "${local_ini}" > "${COUCHDB_DIR}/config/local.ini"
+            if [ ! -f "\$COUCHDBDIR/config/local.ini" ]; then
+              echo "${local_ini}" > "\$COUCHDBDIR/config/local.ini"
             fi
 
-            export ERL_FLAGS="-couch_ini $PWD/.couchdb/config/local.ini"
+            export ERL_FLAGS="-couch_ini \$COUCHDBDIR/config/local.ini"
 
             ### redis 
-            mkdir -p ${REDIS_DIR}/data
-            mkdir -p ${REDIS_DIR}/config
-            if [ ! -f "${REDIS_DIR}/config/redis.conf" ]; then
+            export REDISDIR=${REDIS_DIR}
+            mkdir -p \$REDISDIR/config
+            if [ ! -f "\$REDISDIR/config/redis.conf" ]; then
               echo "${redis_conf}" > "${REDIS_DIR}/config/redis.conf" 
             fi
             
@@ -80,11 +81,10 @@
             fi
 
             ### postgresql 
-            export PGDATA=${POSTGRES_DIR}/data       
-            export PGHOST=${POSTGRES_DIR}/socket      
+            export PGDIR=${POSTGRES_DIR}      
+            export PGDATA=\$PGDIR/data       
 
             mkdir -p \$PGDATA
-            mkdir -p \$PGHOST 
 
             # Initialize PostgreSQL if needed
             if [ ! -f "\$PGDATA/PG_VERSION" ]; then
@@ -94,6 +94,7 @@
             ### shell prompt
             export PS1="%F{green}(JW):%F{blue}%c%F{white}$ "
             EOF
+            # end .zshrc
 
             ### zsh
             export SHELL=$(which zsh)
