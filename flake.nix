@@ -12,36 +12,58 @@
         pkgs = import nixpkgs {
           inherit system;
         };
+        postgresDir = toString ./.;
       in
       {
         devShells.default = with pkgs; mkShell {
           buildInputs = [
             glibcLocales
-            postgresql
             couchdb3
             redis
+            postgresql
             nginx
             bun
+            zsh
           ];
 
          
           shellHook = ''
+            
+            # set .zshrc
+            cat << EOF > .zshrc
+
             ### locale 
             export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
-
-            ### postgresql 
 
             ### couchdb
             export ERL_FLAGS="-couch_ini $PWD/.couchdb/config/local.ini"
 
             ### redis 
-            # first check then set
-            # sudo sysctl -w vm.overcommit_memory=1
+            # set overcommit_memory
+            if [[ $(sysctl -n vm.overcommit_memory) -eq 0 ]]; then
+              sudo sysctl -w vm.overcommit_memory=1
+            fi
 
-            ### nginx
+            ### postgresql 
+            export PGDATA=$PWD/.postgres/data       
+            export PGHOST=$PWD/.postgres/socket      
+
+            mkdir -p \$PGDATA
+            mkdir -p \$PGHOST 
+
+            # Initialize PostgreSQL if needed
+            if [ ! -f "\$PGDATA/PG_VERSION" ]; then
+              initdb -D \$PGDATA
+            fi
 
             ### shell prompt
-            export PS1="\e[0;32m(JW)\e[0m:\e[0;34m\W\e[0m\$ "
+            export PS1="%F{green}(JW):%F{blue}%c%F{white}$ "
+            EOF
+
+            ### zsh
+            export SHELL=$(which zsh)
+            export ZDOTDIR=$PWD
+            exec zsh
           '';
         };
       }
