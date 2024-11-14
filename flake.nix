@@ -14,6 +14,7 @@
         };
 
         COUCHDB_DIR = "$PWD/.couchdb";
+
         local_ini = ''
         [couchdb]
         database_dir = $PWD/.couchdb/data
@@ -26,11 +27,14 @@
         '';
 
         REDIS_DIR = "$PWD/.redis";
+
         redis_conf = ''
         dir $PWD/.redis 
 
         dbfilename dump.rdb
         '';
+
+        POSTGRES_DIR = "$PWD/.postgres";
       in
       {
         devShells.default = with pkgs; mkShell {
@@ -70,15 +74,14 @@
               echo "${redis_conf}" > "${REDIS_DIR}/config/redis.conf" 
             fi
             
-
             # set overcommit_memory
             if [[ $(sysctl -n vm.overcommit_memory) -eq 0 ]]; then
               sudo sysctl -w vm.overcommit_memory=1
             fi
 
             ### postgresql 
-            export PGDATA=$PWD/.postgres/data       
-            export PGHOST=$PWD/.postgres/socket      
+            export PGDATA=${POSTGRES_DIR}/data       
+            export PGHOST=${POSTGRES_DIR}/socket      
 
             mkdir -p \$PGDATA
             mkdir -p \$PGHOST 
