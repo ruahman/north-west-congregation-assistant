@@ -174,7 +174,7 @@ dist
 # Finder (MacOS) folder config
 .DS_Store
 
-.couchdb/data
-dump.rdb
-.postgres/data
+.couchdb
+.postgres
+.redis
 .zshrc
