@@ -9,7 +9,7 @@ couchdb\:start:
 
 redis\:start:
 	@echo start redis...
-	redis-server $$REDISDIR/config/redis.conf
+	redis-server $$REDISDIR/redis.conf
 
 postgres\:start:
 	@echo start postgres...
@@ -28,7 +28,12 @@ psql\:connect:
 	psql -h $$PGDIR -d postgres -c '\conninfo'
 
 nginx\:start:
-	@echo start nginx
+	@echo start nginx...
+	nginx -e stderr -q -c $$NGINXDIR/nginx.conf
+
+nginx\:stop:
+	@echo stop nginx...
+	nginx -e stderr -c $$NGINXDIR/nginx.conf -s quit
 
 clean\:postgres:
 	rm -rf .postgres
@@ -39,17 +44,21 @@ clean\:couchdb:
 clean\:redis:
 	rm -rf .redis
 
+clean\:nginx:
+	rm -rf .nginx
+
 clean\:zshrc:
 	rm .zshrc
 
 clean\:node_modules:
 	rm -rf node_modules
 
-clean: clean\:couchdb clean\:postgres clean\:redis clean\:zshrc
+clean: clean\:couchdb clean\:postgres clean\:redis clean\:nginx clean\:zshrc
 
 .PHONY: nix
 .PHONY: couchdb\:start 
 .PHONY: redis\:start 
 .PHONY: postgres\:start psql\:connect psql
-.PHONY: clean clean\:postgres clean\:couchdb clean\:redis clean\:zshrc clean\:node_modules
+.PHONY: nginx\:start nginx\:stop 
+.PHONY: clean clean\:postgres clean\:couchdb clean\:redis clean\:zshrc clean\:node_modules clean\:nginx
 
