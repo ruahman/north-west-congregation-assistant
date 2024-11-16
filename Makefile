@@ -35,6 +35,10 @@ nginx\:stop:
 	@echo stop nginx...
 	nginx -e stderr -c $$NGINXDIR/nginx.conf -s quit
 
+nginx\:reload:
+	@echo reload nginx...
+	nginx -e stderr -c $$NGINXDIR/nginx.conf -s reload
+
 clean\:postgres:
 	rm -rf .postgres
 
