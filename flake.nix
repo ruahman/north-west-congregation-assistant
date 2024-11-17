@@ -13,7 +13,6 @@
           inherit system;
         };
 
-
         COUCHDB_DIR = "$PWD/.couchdb";
 
         local_ini = ''
@@ -226,7 +225,7 @@
               echo "${index_html}" > "${NGINX_DIR}/html/index.html"
             fi
 
-            if [ ! -f "${NGINX_DIR}/certs/nginx-selfsigned.key" ]; then
+            if [ ! -f "${NGINX_DIR}/certs/priv.key" ]; then
               cd "${NGINX_DIR}/certs"
               # -x509: cert type
               # -nodes: no passcode 
