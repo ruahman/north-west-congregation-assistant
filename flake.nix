@@ -52,6 +52,7 @@
             redis
             postgresql
             nginx
+            typescript-language-server
             bun
             zsh
           ];
