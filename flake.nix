@@ -13,7 +13,7 @@
           inherit system;
         };
 
-        COUCHDB_DIR = "$PWD/.couchdb";
+        COUCHDB_DIR = "$PWD/.config/couchdb";
 
         local_ini = ''
         [couchdb]
@@ -26,7 +26,7 @@
         bind_address = 127.0.0.1
         '';
 
-        REDIS_DIR = "$PWD/.redis";
+        REDIS_DIR = "$PWD/.config/redis";
 
         redis_conf = ''
         dir ${REDIS_DIR} 
@@ -34,9 +34,9 @@
         dbfilename dump.rdb
         '';
 
-        POSTGRES_DIR = "$PWD/.postgres";
+        POSTGRES_DIR = "$PWD/.config/postgres";
 
-        NGINX_DIR = "$PWD/.nginx";
+        NGINX_DIR = "$PWD/.config/nginx";
 
         index_html = ''
         <h1>Hello Territory Assistant</h1>
@@ -233,11 +233,11 @@
               # -days: expiration 
               # -newkey: algorythm
               openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout priv.key -out pub.crt
-              cd ../..
+              cd ../../..
             fi
 
             ### zsh
-            cat << EOF > .zshrc
+            cat << EOF > .config/.zshrc
 
             export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
             export COUCHDBDIR=${COUCHDB_DIR}
@@ -247,12 +247,86 @@
             export PGDATA=\$PGDIR/data       
             export NGINXDIR=${NGINX_DIR}
 
-            export PS1="%F{green} (JW):%F{blue}%c%F{white}$ "
+            git_status() {
+  
+              # Check if inside a Git repository
+              if ! git rev-parse --is-inside-work-tree &> /dev/null; then
+                  return 1  # Exit the function early with a non-zero exit code
+              fi
+
+              # get current branch
+              branch=\$(git branch --show-current)
+
+              # check if any files were modified
+              if [[ -n \$(git status --porcelain | grep '^ \?M') ]]; then
+                changes="*"
+              else
+                changes=""
+              fi
+
+              # Check if any files were added
+              if [[ -n \$(git status --porcelain | grep '^ \?A') ]]; then
+                added="+"
+              else
+                added=""
+              fi
+
+              # check if any files were deleted
+              if [[ -n \$(git status --porcelain | grep '^ \?D') ]]; then
+                deleted="-"
+              else
+                deleted=""
+              fi
+
+              # check if there are any untracked files
+              if [[ -n \$(git status --porcelain | grep '^ \??') ]]; then
+                untracked="?"
+              else
+                untracked=""
+              fi
+
+              # check if your branch is ahead
+              if git status | grep -q "Your branch is ahead"; then
+                ahead="" 
+              else
+                ahead=""
+              fi
+
+              echo " %F{yellow}\$changes\$added\$deleted\$(echo \$untracked)%F{red}git(\$branch%F{yellow}\$ahead%F{red})"
+            } 
+  
+            export start_path=\$PWD
+            relative_path() {
+              if [[ -z \$1 ]]; then
+                  return 1
+              fi
+
+              # Get the relative path using realpath
+              if relative=\$(realpath --relative-to="\$(echo \$start_path)" "\$1" 2>/dev/null); then
+                  if [[ "\$relative" == "." ]]; then
+                      echo "~"
+                  else
+                      echo "~/\$relative"
+                  fi
+              else
+                  return 1
+              fi
+            }
+
+            # Define a function to generate the prompt
+            function update_prompt {
+                PROMPT="%F{green}󱄅 (%n@%M):%F{blue}\$(relative_path \$PWD)\$(git_status)%F{white}$ "
+                export PS1=\$PROMPT
+            }
+
+            precmd_functions+=(update_prompt)
             EOF
 
-            export SHELL=$(which zsh)
-            export ZDOTDIR=$PWD
-            exec zsh
+            if [ -t 1 ]; then
+              export SHELL=$(which zsh)
+              export ZDOTDIR=$PWD/.config
+              exec zsh
+            fi
           '';
         };
       }
