@@ -7,13 +7,22 @@ couchdb\:start:
 	@echo start couchdb...
 	couchdb
 
+couchdb\:clean:
+	rm -rf .config/couchdb
+
 redis\:start:
 	@echo start redis...
 	redis-server $$REDISDIR/redis.conf
 
+redis\:clean:
+	rm -rf .config/redis
+
 postgres\:start:
 	@echo start postgres...
 	pg_ctl -D $$PGDATA -o "-k $$PGDIR" -l $$PGDIR/logfile start
+
+postgres\:clean:
+	rm -rf .config/postgres
 
 postgres\:stop:
 	@echo stop postgres...
@@ -39,30 +48,24 @@ nginx\:reload:
 	@echo reload nginx...
 	nginx -e stderr -c $$NGINXDIR/nginx.conf -s reload
 
-clean\:postgres:
-	rm -rf .postgres
+nginx\:clean:
+	rm -rf .config/nginx
 
-clean\:couchdb:
-	rm -rf .couchdb
+.PHONY: zshrc\:clean
+zshrc\:clean:
+	rm .config/.zshrc
 
-clean\:redis:
-	rm -rf .redis
-
-clean\:nginx:
-	rm -rf .nginx
-
-clean\:zshrc:
-	rm .zshrc
-
-clean\:node_modules:
+.PHONY: node\:clean
+node\:clean:
 	rm -rf node_modules
 
-clean: clean\:couchdb clean\:postgres clean\:redis clean\:nginx clean\:zshrc
+.PHONY: clean
+clean: couchdb\:clean postgres\:clean redis\:clean nginx\:clean zshrc\:clean
+	rm -rf .config
 
 .PHONY: nix
-.PHONY: couchdb\:start 
-.PHONY: redis\:start 
-.PHONY: postgres\:start psql\:connect psql
-.PHONY: nginx\:start nginx\:stop 
-.PHONY: clean clean\:postgres clean\:couchdb clean\:redis clean\:zshrc clean\:node_modules clean\:nginx
+.PHONY: couchdb\:start couchdb\:clean 
+.PHONY: redis\:start redis\:clean
+.PHONY: postgres\:start postgres\:stop postgres\:clean psql\:connect psql
+.PHONY: nginx\:start nginx\:stop nginx\:reload nginx\:clean 
 
