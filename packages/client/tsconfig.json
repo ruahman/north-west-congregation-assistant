@@ -6,6 +6,11 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
 
+    "baseUrl": "./src", // Root directory for resolving paths
+    "paths": {
+      "@utils/*": ["./utils/*"],
+    },
+
     /* Bundler mode */
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
@@ -18,7 +23,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": truea,
+    "noImplicitAny": false
   },
   "include": ["src"]
 }
