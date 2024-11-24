@@ -1,11 +1,17 @@
+import { DefineCustomElement } from "@utils/web_component";
 
+@DefineCustomElement('here-wego')
+export class HereWeGO extends HTMLElement {
 
-class HereWeGO extends HTMLElement {
+  private text: string;
+  private template: HTMLTemplateElement;
 
   constructor() {
     super();
-    const text = this.getAttribute("text")
-    this.innerHTML = `<h1>${text}</h1>`;
+    this.text = this.getAttribute("text")!
+    this.attachShadow({ mode: "open" });
+    this.template = document.createElement("template");
+    this.template.innerHTML = `<h1 id='here-wego'>${this.text}</h1>`;
   }
 
   // Specify which attributes to observe
@@ -14,23 +20,33 @@ class HereWeGO extends HTMLElement {
   }
 
   // React to attribute changes
-  attributeChangedCallback(attribute, oldValue, newValue) {
-    if (attribute === "test" && oldValue !== newValue) {
-      const elem = this.querySelector("h1");
-      if (elem) {
-        elem.textContent = newValue;
-      }
+  attributeChangedCallback(_attribute, _oldValue, newValue) {
+    const elem = this.shadowRoot?.querySelector("h1");
+    if (elem) {
+      elem.textContent = newValue;
     }
   }
 
+  set test(val: string) {
+    const elem = this.shadowRoot?.querySelector("h1");
+    if (elem) {
+      elem.textContent = val;
+    }
+  }
+
+  // now component is in dom
   connectedCallback() {
     console.log("connected...");
-    // this.textContent = "implement here wego map"
+    this.shadowRoot?.appendChild(this.template.content.cloneNode(true));
   }
 
   disconnectedCallback() {
     console.log("disconnected...");
   }
+
+  // moved to another documetn
+  adoptedCallback() {
+    console.log("adopted");
+  }
 }
 
-customElements.define('here-wego', HereWeGO);
