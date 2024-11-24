@@ -9,6 +9,7 @@
     "baseUrl": "./src", // Root directory for resolving paths
     "paths": {
       "@utils/*": ["./utils/*"],
+      "@/*": ["."],
     },
 
     /* Bundler mode */
@@ -24,7 +25,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "experimentalDecorators": true,
   },
   "include": ["src"]
 }
