@@ -1,7 +1,7 @@
 import { DefineCustomElement } from "@utils/web_component";
 
-@DefineCustomElement('here-wego')
-export class HereWeGO extends HTMLElement {
+@DefineCustomElement('here-map')
+export class HereMap extends HTMLElement {
 
   private text: string;
   private template: HTMLTemplateElement;
