@@ -29,20 +29,39 @@ class $Elements {
       return this.elements[prop];
     }
   }
+
+  // on(event: string, handler: (e) => void, options: any) {
+  //   this.elements.forEach((elem) => {});
+  // }
+
+  // off(event: string, handler: (e) => void, options: any) {
+  //   this.elements.forEach((elem) => {});
+  // }
 }
 
-export function $(query: string) {
-  const proxy = new Proxy(new $Elements(document.querySelectorAll(query)), {
-    get(obj, prop) {
-      // if prop is not a number
-      if (isNaN(Number(prop)) == true) {
-        return obj[prop];
-      }
-      // prop is an index
-      else {
-        return obj.get(prop);
-      }
-    },
-  });
-  return proxy;
+export function Query(doc: Document) {
+  return function (param: string | (() => void)) {
+    // query
+    if (typeof param === "string") {
+      const proxy = new Proxy(new $Elements(doc.querySelectorAll(param)), {
+        get(obj, prop) {
+          // prop
+          if (isNaN(Number(prop)) == true) {
+            return obj[prop];
+          }
+          // index
+          else {
+            return obj.get(prop);
+          }
+        },
+      });
+      return proxy;
+      // load
+    } else if (typeof param === "function") {
+      window.addEventListener("DOMContentLoaded", () => {
+        param();
+      });
+    }
+    return new $Elements([] as unknown as NodeListOf<Element>);
+  };
 }
