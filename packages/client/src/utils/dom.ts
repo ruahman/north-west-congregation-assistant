@@ -30,13 +30,21 @@ class $Elements {
     }
   }
 
-  // on(event: string, handler: (e) => void, options: any) {
-  //   this.elements.forEach((elem) => {});
-  // }
+  on(
+    event: string,
+    handler: EventListenerOrEventListenerObject,
+    options: AddEventListenerOptions,
+  ) {
+    this.elements.forEach((elem) => {
+      elem.addEventListener(event, handler, options);
+    });
+  }
 
-  // off(event: string, handler: (e) => void, options: any) {
-  //   this.elements.forEach((elem) => {});
-  // }
+  off(event: string, handler: EventListenerOrEventListenerObject) {
+    this.elements.forEach((elem) => {
+      elem.removeEventListener(event, handler);
+    });
+  }
 }
 
 export function Query(doc: Document) {
