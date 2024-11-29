@@ -1,6 +1,5 @@
-
 class $Elements {
-  private elements: Array<Element>
+  private elements: Array<Element>;
 
   constructor(elems: NodeListOf<Element>) {
     this.elements = Array.from(elems);
@@ -9,7 +8,7 @@ class $Elements {
   set(prop: string, value: string) {
     this.elements.forEach((elem) => {
       elem.setAttribute(prop, value);
-    })
+    });
   }
 
   get(prop) {
@@ -20,10 +19,9 @@ class $Elements {
       });
 
       if (props.length == 1) {
-        return props[0]
-      }
-      else {
-        return props
+        return props[0];
+      } else {
+        return props;
       }
     }
     // if index get element
@@ -31,20 +29,47 @@ class $Elements {
       return this.elements[prop];
     }
   }
+
+  on(
+    event: string,
+    handler: EventListenerOrEventListenerObject,
+    options: AddEventListenerOptions,
+  ) {
+    this.elements.forEach((elem) => {
+      elem.addEventListener(event, handler, options);
+    });
+  }
+
+  off(event: string, handler: EventListenerOrEventListenerObject) {
+    this.elements.forEach((elem) => {
+      elem.removeEventListener(event, handler);
+    });
+  }
 }
 
-export function $(query: string) {
-  let proxy = new Proxy(new $Elements(document.querySelectorAll(query)), {
-    get(obj, prop) {
-      // if prop is not a number
-      if (isNaN(Number(prop)) == true) {
-        return obj[prop];
-      }
-      // prop is an index
-      else {
-        return obj.get(prop)
-      }
+export function Query(doc: Document) {
+  return function (param: string | (() => void)) {
+    // query
+    if (typeof param === "string") {
+      const proxy = new Proxy(new $Elements(doc.querySelectorAll(param)), {
+        get(obj, prop) {
+          // prop
+          if (isNaN(Number(prop)) == true) {
+            return obj[prop];
+          }
+          // index
+          else {
+            return obj.get(prop);
+          }
+        },
+      });
+      return proxy;
+      // load
+    } else if (typeof param === "function") {
+      window.addEventListener("DOMContentLoaded", () => {
+        param();
+      });
     }
-  });
-  return proxy;
+    return new $Elements([] as unknown as NodeListOf<Element>);
+  };
 }
