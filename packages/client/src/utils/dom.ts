@@ -1,5 +1,5 @@
-class $Elements {
-  private elements: Array<Element>;
+export class $Elements {
+  private elements: Element[];
 
   constructor(elems: NodeListOf<Element>) {
     this.elements = Array.from(elems);
@@ -47,11 +47,18 @@ class $Elements {
   }
 }
 
-export function Query(doc: Document) {
-  return function (param: string | (() => void)) {
-    // query
-    if (typeof param === "string") {
-      const proxy = new Proxy(new $Elements(doc.querySelectorAll(param)), {
+export type $Query = (selector: string) => $Elements;
+
+export const _ = {
+  ready(param: () => void) {
+    window.addEventListener("DOMContentLoaded", () => {
+      param();
+    });
+  },
+  $(doc: Document | ShadowRoot): $Query {
+    return function (selector: string): $Elements {
+      // query
+      const proxy = new Proxy(new $Elements(doc.querySelectorAll(selector)), {
         get(obj, prop) {
           // prop
           if (isNaN(Number(prop)) == true) {
@@ -64,12 +71,6 @@ export function Query(doc: Document) {
         },
       });
       return proxy;
-      // load
-    } else if (typeof param === "function") {
-      window.addEventListener("DOMContentLoaded", () => {
-        param();
-      });
-    }
-    return new $Elements([] as unknown as NodeListOf<Element>);
-  };
-}
+    };
+  },
+};
